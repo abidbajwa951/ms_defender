@@ -1,0 +1,46 @@
+- name: Create MDATP directories
+  file:
+    path: /etc/opt/microsoft/mdatp/
+    recurse: true
+    state: directory
+    mode: 0755
+    owner: root
+    group: root
+  tags:
+    - onboarding
+
+- name: Register mdatp_onboard.json
+  stat:
+    path: /etc/opt/microsoft/mdatp/mdatp_onboard.json
+  register: mdatp_onboard
+  ignore_error: true
+
+- name: Extract WindowsDefenderATPOnboardingPackage.zip into /etc/opt/microsoft/mdatp
+  unarchive:
+    src: WindowsDefenderATPOnboardingPackage.zip
+    dest: /etc/opt/microsoft/mdatp
+    mode: 0600
+    owner: root
+    group: root
+  register: unarchive_out
+  ignore_errors: yes
+  when: not mdatp_onboard.stat.exists
+  tags:
+    - onboarding
+- name: "DEBUG: output from onboarding unzip attempt."
+  debug:
+    var: unarchive_out
+    verbosity: 3
+  when:
+    - unarchive_out is defined
+  tags:
+    - onboarding
+- name: Custom error handling for configuration unzip.
+  fail:
+    msg: "mdatp configuration json did not unzip successfully."
+  when:
+    - unarchive_out is defined
+    - unarchive_out.failed
+    - not 'Failed to find handler' in unarchive_out.msg
+  tags:
+    - onboarding

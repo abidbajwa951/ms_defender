@@ -1,0 +1,5 @@
+---
+prod_server_role: prod
+test_server_role: test
+dev_server_role: dev
+base_url: "{{ 'prod' if server_role == 'prod' else 'insider-fast' if server_role == 'test' else 'insider-slow' if server_role == 'dev' else '' }}"

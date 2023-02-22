@@ -1,0 +1,34 @@
+---
+- name: Add Microsoft DNF/YUM key
+  rpm_key:
+    state: present
+    key: https://packages.microsoft.com/keys/microsoft.asc
+  when: ansible_os_family == "RedHat"
+
+- name: Add  Microsoft yum repository for MDATP on RPM Linux 8 {{ server_role|lower }}
+  yum_repository:
+    name: packages-microsoft-{{ server_role|lower }}
+    description: Microsoft Defender for Endpoint
+    file: microsoft-{{ server_role|lower }}
+    baseurl: https://packages.microsoft.com/rhel/8/prod/ 
+    gpgcheck: yes
+    enabled: Yes
+  when: ansible_os_family == "RedHat" and version_compare(ansible_distribution_version, '>=8.0') and version_compare(ansible_distribution_version, '<=8.9') and server_role|lower in prod_server_role
+- name: Add  Microsoft yum repository for MDATP on RPM Linux 8 {{ server_role|lower }}
+  yum_repository:
+    name: packages-microsoft-{{ server_role|lower }}
+    description: Microsoft Defender for Endpoint
+    file: microsoft-{{ server_role|lower }}
+    baseurl: https://packages.microsoft.com/rhel/8/insider-fast/
+    gpgcheck: yes
+    enabled: Yes
+  when: ansible_os_family == "RedHat" and version_compare(ansible_distribution_version, '>=8.0') and version_compare(ansible_distribution_version, '<=8.9') and server_role|lower in test_server_role
+- name: Add  Microsoft yum repository for MDATP on RPM Linux 8 {{ server_role|lower }}
+  yum_repository:
+    name: packages-microsoft-{{ server_role|lower }}
+    description: Microsoft Defender for Endpoint
+    file: microsoft-{{ server_role|lower }}
+    baseurl: https://packages.microsoft.com/rhel/8/insider-fast/
+    gpgcheck: yes
+    enabled: Yes
+  when: ansible_os_family == "RedHat" and version_compare(ansible_distribution_version, '>=8.0') and version_compare(ansible_distribution_version, '<=8.9') and server_role|lower in dev_server_role

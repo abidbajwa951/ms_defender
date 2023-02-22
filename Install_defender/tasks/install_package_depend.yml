@@ -1,0 +1,34 @@
+---
+- name: Validate OS version requirements.
+  assert:
+    that:
+      - ansible_distribution_major_version > "6"
+    fail_msg: "Only RedHat 7 and newer are supported."
+    success_msg: "OS major version supported."
+  when:
+    - ansible_os_family == "RedHat"
+- name: Install documented dependencies.
+  package:
+    name:
+      - curl
+      - unzip
+      - glibc
+      - policycoreutils
+      - audit
+      - selinux-policy-targeted
+      - mde-netfilter
+    state: present
+  tags:
+    - install
+    - dependencies
+- name: Install undocumented dependencies for EL 8.
+  dnf:
+    name:
+      - audispd-plugins
+    state: present
+  when:
+    - ansible_os_family == "RedHat"
+    - ansible_distribution_major_version == "8"
+  tag:
+    - install
+    - dependencies

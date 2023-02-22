@@ -1,0 +1,27 @@
+- name: Defender Installation
+  hosts: all
+  vars_prompt:
+    - name: group_tag
+      prompt: Please Enter Device Group Name
+      private: no
+    - name: server_role
+      prompt: Please Enter Server Role PROD/DEV/TEST
+      default: "PROD"
+      private: no
+  vars_files:
+    - vars/main.yml
+  tasks:
+    - name: Unzip the onboarding package from Microsoft Defender Security Center.
+      include_tasks: tasks/onboarding_setup.yml
+
+    - name: Setup packages.microsoft.com repository on Linux7.
+      include_tasks: tasks/add_rpm_repo_7.yml
+
+    - name: Setup packages.microsoft.com repository on Linux8.
+      include_tasks: tasks/add_rpm_repo_8.yml
+
+    - name: Install  Dependencies and Defender Package
+      include_tasks: tasks/install_package_depend.yml
+
+    - name: Manage the Defender package from Microsoft.
+      include_tasks: tasks/package.yml

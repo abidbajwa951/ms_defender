@@ -1,0 +1,57 @@
+#- name: Add Microsoft APT key
+#  apt_key:
+#    url: https://packages.microsoft.com/keys/microsoft.asc
+#    state: present
+#  when: ansible_os_family == "Debian"
+#
+#- name: Add Microsoft apt repository for MDATP
+#  apt_repository:
+#    repo: deb [arch=arm64,armhf,amd64] https://packages.microsoft.com/[distro]/[version]/prod [codename] main
+#    update_cache: yes
+#    state: present
+#    filename: microsoft-[channel]
+#  when: ansible_os_family == "Debian"
+
+- name: Add Microsoft DNF/YUM key
+  rpm_key:
+    state: present
+    key: https://packages.microsoft.com/keys/microsoft.asc
+  when: ansible_os_family == "RedHat"
+
+# - name: Add  Microsoft yum repository for MDATP on RPM Linux 7 {{ server_role|lower }}
+#   yum_repository:
+#     name: packages-microsoft-{{ server_role|lower }}
+#     description: Microsoft Defender for Endpoint
+#     file: microsoft-{{ server_role|lower }}
+#     baseurl: https://packages.microsoft.com/{{ (ansible_distribution == 'RedHat') | ternary('rhel', ansible_distribution) | lower }}/{{ (ansible_major_distribution_version == 7) | ternary('7.2', 'latest') }}/prod/ 
+#     gpgcheck: yes
+#     enabled: Yes
+#   when: ansible_os_family == "RedHat" and version_compare(ansible_distribution_version, '>=7.2') and version_compare(ansible_distribution_version, '<=7.9') and server_role|lower in prod_server_role
+# - name: Add  Microsoft yum repository for MDATP on RPM Linux 7 {{ server_role|lower }}
+#   yum_repository:
+#     name: packages-microsoft-{{ server_role|lower }}
+#     description: Microsoft Defender for Endpoint
+#     file: microsoft-{{ server_role|lower }}
+#     baseurl: https://packages.microsoft.com/{{ (ansible_distribution == 'RedHat') | ternary('rhel', ansible_distribution) | lower }}/7.{{ 2 if ansible_distribution_major_version == '7' else 3 }}/insider-fast/
+#     gpgcheck: yes
+#     enabled: Yes
+#   when: ansible_os_family == "RedHat" and version_compare(ansible_distribution_version, '>=7.2') and version_compare(ansible_distribution_version, '<=7.9') and server_role|lower in test_server_role
+# - name: Add  Microsoft yum repository for MDATP on RPM Linux 7 {{ server_role|lower }}
+#   yum_repository:
+#     name: packages-microsoft-{{ server_role|lower }}
+#     description: Microsoft Defender for Endpoint
+#     file: microsoft-{{ server_role|lower }}
+#     baseurl: https://packages.microsoft.com/{{ (ansible_distribution == 'RedHat') | ternary('rhel', ansible_distribution) | lower }}/{{ (ansible_major_distribution_version == 7) | ternary('7.2', 'latest') }}/insider-fast/
+#     gpgcheck: yes
+#     enabled: Yes
+#   when: ansible_os_family == "RedHat" and version_compare(ansible_distribution_version, '>=7.2') and version_compare(ansible_distribution_version, '<=7.9') and server_role|lower in dev_server_role
+
+- name: Add  Microsoft yum repository for MDATP on RPM Linux 7 {{ server_role|lower }}
+  yum_repository:
+    name: packages-microsoft-{{ server_role|lower }}
+    description: Microsoft Defender for Endpoint
+    file: microsoft-{{ server_role|lower }}
+    baseurl: "https://packages.microsoft.com/{{ (ansible_distribution == 'RedHat') | ternary('rhel', ansible_distribution) | lower }}/7.{{ 2 if ansible_distribution_major_version == '7' else 3 }}{{ base_url }}/"
+    gpgcheck: yes
+    enabled: Yes
+  when: ansible_os_family == "RedHat" and version_compare(ansible_distribution_version, '>=7.2') and version_compare(ansible_distribution_version, '<=7.9')
